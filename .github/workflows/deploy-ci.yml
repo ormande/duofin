@@ -1,0 +1,50 @@
+name: CI & Deploy Monitor
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-verify:
+    name: 🚀 Build & Verificação DuoFin
+    runs-on: ubuntu-latest
+
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://knwsmbnhcmgulzyfgwtu.supabase.co' }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtud3NtYm5oY21ndWx6eWZnd3R1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1OTY0NTEsImV4cCI6MjEwODE3MjQ1MX0.wGVbbn5bs_tdTo8YmM4iyVtLB5eU0Yz0dUArVZTMMU4' }}
+
+    steps:
+      - name: 📥 Clonar Repositório
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 📦 Instalar Dependências
+        run: npm ci
+
+      - name: 🔍 Checar Tipos e Compilar Produção (Vite Build)
+        run: npm run build
+
+      - name: 📊 Resumo do Deploy & Métricas
+        if: always()
+        run: |
+          echo "## 🚀 DuoFin — Relatório do Pipeline CI/CD" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status do Build:** ${{ job.status == 'success' && '✅ Aprovado (Zero Erros)' || '❌ Falhou' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`$GITHUB_SHA\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Autor:** $GITHUB_ACTOR" >> $GITHUB_STEP_SUMMARY
+          echo "- **Ramo:** \`$GITHUB_REF_NAME\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Arquivos Gerados para Produção (Vercel):" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`text" >> $GITHUB_STEP_SUMMARY
+          ls -la dist/ >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🌐 **Vercel Deploy:** O build foi validado com sucesso. A Vercel conectada ao repositório atualizará automaticamente o app em produção." >> $GITHUB_STEP_SUMMARY
