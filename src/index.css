@@ -1,0 +1,269 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-display: 'DM Sans', 'Plus Jakarta Sans', sans-serif;
+
+    /* DARK THEME VARIABLES (Default) */
+    --bg-canvas: #090E1A;
+    --bg-surface: #111827;
+    --bg-elevated: #141E33;
+    --bg-interactive: #192540;
+    --bg-interactive-hover: #223254;
+    --bg-input: #0D1526;
+    --bg-input-focus: #121D35;
+    --bg-subtle: rgba(255, 255, 255, 0.035);
+    --bg-track: #1E293B;
+
+    --border-glass: rgba(255, 255, 255, 0.08);
+    --border-elevated: rgba(255, 255, 255, 0.14);
+    --border-input: rgba(255, 255, 255, 0.12);
+
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+
+    --shadow-card: 0 8px 24px -8px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    --shadow-modal: 0 24px 55px -12px rgba(0, 0, 0, 0.78), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  }
+
+  html.light {
+    --bg-canvas: #F4F7FB;
+    --bg-surface: #FFFFFF;
+    --bg-elevated: #FFFFFF;
+    --bg-interactive: #F8FAFC;
+    --bg-interactive-hover: #EFF6FF;
+    --bg-input: #F8FAFC;
+    --bg-input-focus: #FFFFFF;
+    --bg-subtle: #F8FAFC;
+    --bg-track: #E2E8F0;
+
+    --border-glass: #E2E8F0;
+    --border-elevated: #CBD5E1;
+    --border-input: #CBD5E1;
+
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #64748B;
+
+    --shadow-card: 0 4px 18px -4px rgba(15, 23, 42, 0.05);
+    --shadow-modal: 0 24px 50px -12px rgba(15, 23, 42, 0.16);
+  }
+
+  * {
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(37, 99, 235, 0.4) transparent;
+  }
+
+  /* Evita cursor de texto "I" em textos e números comuns da interface */
+  body, div, span, p, h1, h2, h3, h4, h5, h6, label, table, th, td {
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: default;
+  }
+
+  /* Mantém seleção e cursor de texto apenas em campos editáveis */
+  input, textarea, [contenteditable="true"] {
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
+  }
+
+  button, a, [role="button"], input[type="checkbox"], input[type="range"] {
+    cursor: pointer;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+  }
+}
+
+/* Remove setinhas (spinners) de todos os inputs numéricos */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* =========================================================
+   CLEAN SOLID SURFACES (ZERO GPU FLICKER / ZERO BLUR REPAINT)
+   ========================================================= */
+
+.liquid-bg-canvas {
+  background-color: var(--bg-canvas);
+}
+
+.liquid-glass {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-card);
+}
+
+.liquid-glass-elevated {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-elevated);
+  box-shadow: var(--shadow-modal);
+}
+
+.liquid-glass-interactive {
+  background-color: var(--bg-interactive);
+  border: 1px solid var(--border-glass);
+  transition: background-color 0.14s ease, border-color 0.14s ease;
+}
+
+.liquid-glass-interactive:hover {
+  background-color: var(--bg-interactive-hover);
+  border-color: rgba(37, 99, 235, 0.45);
+}
+
+.liquid-input {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-input);
+  color: var(--text-primary);
+  transition: border-color 0.14s ease, background-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+.liquid-input:focus, .liquid-input:focus-within {
+  border-color: #2563EB;
+  background-color: var(--bg-input-focus);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+  outline: none;
+}
+
+/* Barra de progresso não preenchida (suave no Light Mode, escura no Dark Mode) */
+.progress-track {
+  background-color: var(--bg-track);
+}
+
+/* Classe dedicada para ícones/letras que SEMPRE devem ser brancos sobre fundo colorido vivo */
+.on-vivid {
+  color: #FFFFFF !important;
+}
+.on-vivid * {
+  color: #FFFFFF !important;
+}
+
+/* Botões Sólidos e Elegantes */
+.btn-vivid-blue {
+  background-color: #2563EB;
+  border: 1px solid #2563EB;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
+  transition: background-color 0.14s ease;
+}
+
+.btn-vivid-blue:hover {
+  background-color: #1D4ED8;
+}
+
+.btn-vivid-emerald {
+  background-color: #10B981;
+  border: 1px solid #059669;
+  color: #FFFFFF !important;
+  transition: background-color 0.14s ease;
+}
+
+.btn-vivid-emerald:hover {
+  background-color: #059669;
+}
+
+.btn-vivid-crimson {
+  background-color: #F43F5E;
+  border: 1px solid #E11D48;
+  color: #FFFFFF !important;
+  transition: background-color 0.14s ease;
+}
+
+.btn-vivid-crimson:hover {
+  background-color: #E11D48;
+}
+
+/* =========================================================
+   LIGHT MODE CONTRAST & SURFACE ADAPTATIONS
+   ========================================================= */
+
+/* Apenas textos que são diretamente .text-white viram escuros no Light Mode,
+   NUNCA filhos de elementos coloridos (.on-vivid) */
+html.light .text-white:not(.on-vivid):not(.btn-vivid-blue):not(.btn-vivid-emerald):not(.btn-vivid-crimson) {
+  color: #0F172A !important;
+}
+
+html.light .text-slate-200 {
+  color: #1E293B !important;
+}
+
+html.light .text-slate-300 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-400 {
+  color: #64748B !important;
+}
+
+/* Fundos secundários muito suaves no Light Mode (Corrige img3 e barras escuras) */
+html.light .bg-black\/60,
+html.light .bg-black\/50 {
+  background-color: #E2E8F0 !important;
+}
+
+html.light .bg-black\/40,
+html.light .bg-black\/35,
+html.light .bg-black\/30,
+html.light .bg-black\/25,
+html.light .bg-black\/20 {
+  background-color: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+}
+
+html.light .bg-white\/5,
+html.light .bg-white\/8,
+html.light .bg-white\/10,
+html.light .bg-white\/\[0\.03\],
+html.light .bg-white\/\[0\.04\] {
+  background-color: #F8FAFC !important;
+}
+
+html.light .border-white\/10,
+html.light .border-white\/12,
+html.light .border-white\/15,
+html.light .border-white\/20,
+html.light .border-white\/25 {
+  border-color: #E2E8F0 !important;
+}
+
+html.light .divide-white\/10 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #E2E8F0 !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.35);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(37, 99, 235, 0.65);
+}
