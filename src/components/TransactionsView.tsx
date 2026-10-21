@@ -27,6 +27,7 @@ import {
   Landmark,
   Users,
   Calendar,
+  Lock,
 } from 'lucide-react';
 
 interface TransactionsViewProps {
@@ -34,6 +35,7 @@ interface TransactionsViewProps {
   selectedMonth: string;
   viewFilter: GlobalViewFilter;
   dateFilterMode: 'dueDate' | 'registrationDate';
+  sessionRole?: 'me' | 'partner';
   onOpenNewTx: (type: 'expense' | 'income') => void;
   onEditTx: (tx: Transaction) => void;
   onDuplicateTx: (tx: Transaction) => void;
@@ -46,6 +48,7 @@ export function TransactionsView({
   selectedMonth,
   viewFilter,
   dateFilterMode,
+  sessionRole = 'me',
   onOpenNewTx,
   onEditTx,
   onDuplicateTx,
@@ -294,13 +297,20 @@ export function TransactionsView({
                     {/* Botão Status 1-clique */}
                     <button
                       type="button"
+                      disabled={tx.responsibility !== 'split' && tx.responsibility !== sessionRole}
                       onClick={() => onToggleTxStatus(tx)}
                       title={
-                        tx.status === 'paid'
+                        tx.responsibility !== 'split' && tx.responsibility !== sessionRole
+                          ? 'Lançamento privado do seu par'
+                          : tx.status === 'paid'
                           ? 'Efetivado (Clique para voltar p/ Pendente)'
                           : 'Pendente (Clique para dar baixa)'
                       }
-                      className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border transition cursor-pointer ${
+                      className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border transition ${
+                        tx.responsibility !== 'split' && tx.responsibility !== sessionRole
+                          ? 'opacity-60 cursor-not-allowed '
+                          : 'cursor-pointer '
+                      }${
                         tx.status === 'paid'
                           ? 'bg-[#00E676]/20 border-[#00E676]/60 text-[#00E676]'
                           : 'bg-[#FFB300]/20 border-[#FFB300]/60 text-[#FFB300]'
@@ -440,23 +450,35 @@ export function TransactionsView({
                         <span className="hidden md:inline">Duplicar</span>
                       </button>
 
-                      <button
-                        type="button"
-                        onClick={() => onEditTx(tx)}
-                        title="Editar lançamento"
-                        className="p-2 rounded-xl liquid-glass-interactive text-slate-600 dark:text-slate-200 hover:text-black dark:hover:text-white cursor-pointer"
-                      >
-                        <Edit3 size={15} />
-                      </button>
+                      {tx.responsibility !== 'split' && tx.responsibility !== sessionRole ? (
+                        <span
+                          className="px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-semibold text-slate-400 flex items-center gap-1"
+                          title="Lançamento privado do seu par (apenas visualização)"
+                        >
+                          <Lock size={12} className="text-[#EC4899]" />
+                          Privado
+                        </span>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => onEditTx(tx)}
+                            title="Editar lançamento"
+                            className="p-2 rounded-xl liquid-glass-interactive text-slate-600 dark:text-slate-200 hover:text-black dark:hover:text-white cursor-pointer"
+                          >
+                            <Edit3 size={15} />
+                          </button>
 
-                      <button
-                        type="button"
-                        onClick={() => onDeleteTx(tx)}
-                        title="Excluir lançamento"
-                        className="p-2 rounded-xl liquid-glass-interactive text-rose-500 hover:text-[#F43F5E] cursor-pointer"
-                      >
-                        <Trash2 size={15} />
-                      </button>
+                          <button
+                            type="button"
+                            onClick={() => onDeleteTx(tx)}
+                            title="Excluir lançamento"
+                            className="p-2 rounded-xl liquid-glass-interactive text-rose-500 hover:text-[#F43F5E] cursor-pointer"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

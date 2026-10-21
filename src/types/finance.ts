@@ -8,6 +8,7 @@ export interface CoupleMember {
   role: PersonRole;
   avatarColor: string;
   email: string;
+  isRegistered?: boolean; // Se o membro já fez o cadastro individual dele
 }
 
 export type AccountType = 'checking' | 'savings' | 'cash' | 'investment';
@@ -139,6 +140,24 @@ export interface FinancialGoal {
   contributions: GoalContribution[];
 }
 
+export type MovementApprovalAction = 'create' | 'edit' | 'delete';
+export type MovementApprovalStatus = 'pending' | 'approved' | 'rejected';
+
+export interface MovementApproval {
+  id: string;
+  action: MovementApprovalAction;
+  targetType: 'transaction' | 'account' | 'card' | 'budget';
+  requestedBy: PersonRole; // Quem solicitou a alteração
+  createdAt: string;       // YYYY-MM-DD HH:mm
+  status: MovementApprovalStatus;
+  description: string;
+  amount?: number;
+  payload: any;            // Os dados a serem criados, alterados ou removidos
+  originalPayload?: any;   // Dados antes da alteração (se for edit ou delete)
+  reviewedAt?: string;
+  reviewedBy?: PersonRole;
+}
+
 export interface WorkspaceData {
   members: CoupleMember[];
   accounts: BankAccount[];
@@ -149,6 +168,7 @@ export interface WorkspaceData {
   transactions: Transaction[];
   budgets: Budget[];
   goals: FinancialGoal[];
+  approvals: MovementApproval[];
   updatedAt: string;
 }
 

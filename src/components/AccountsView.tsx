@@ -3,6 +3,7 @@ import {
   AccountType,
   BankAccount,
   OwnerScope,
+  PersonRole,
   WorkspaceData,
 } from '../types/finance';
 import { calculateAccountBalance, formatCurrency } from '../lib/financeUtils';
@@ -11,11 +12,12 @@ import { LiquidModal } from './ui/LiquidModal';
 import { LiquidSelect } from './ui/LiquidSelect';
 import { CurrencyInput } from './ui/CurrencyInput';
 import { IconAndColorPicker } from './ui/IconAndColorPicker';
-import { Plus, Edit3, Trash2, ArrowLeftRight, SlidersHorizontal } from 'lucide-react';
+import { Plus, Edit3, Trash2, ArrowLeftRight, SlidersHorizontal, Lock } from 'lucide-react';
 
 interface AccountsViewProps {
   workspace: WorkspaceData;
   selectedMonth: string;
+  sessionRole?: PersonRole;
   onSaveAccount: (account: BankAccount, isEdit: boolean) => void;
   onDeleteAccount: (accountId: string) => void;
   onOpenTransferModal: () => void;
@@ -24,6 +26,7 @@ interface AccountsViewProps {
 export function AccountsView({
   workspace,
   selectedMonth,
+  sessionRole = 'me',
   onSaveAccount,
   onDeleteAccount,
   onOpenTransferModal,
@@ -178,22 +181,31 @@ export function AccountsView({
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => openEdit(acc)}
-                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white cursor-pointer"
-                    title="Editar Conta"
-                  >
-                    <Edit3 size={14} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAccountToDelete(acc)}
-                    className="p-2 rounded-xl bg-white/10 hover:bg-[#F43F5E]/25 text-rose-300 hover:text-[#F43F5E] cursor-pointer"
-                    title="Excluir Conta"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                  {acc.owner !== 'both' && acc.owner !== sessionRole ? (
+                    <span className="px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-[10px] font-semibold text-slate-400 flex items-center gap-1" title="Esta conta é privada do seu par e não pode ser editada por você">
+                      <Lock size={12} className="text-[#EC4899]" />
+                      Privada do par
+                    </span>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => openEdit(acc)}
+                        className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white cursor-pointer"
+                        title="Editar Conta"
+                      >
+                        <Edit3 size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAccountToDelete(acc)}
+                        className="p-2 rounded-xl bg-white/10 hover:bg-[#F43F5E]/25 text-rose-300 hover:text-[#F43F5E] cursor-pointer"
+                        title="Excluir Conta"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -220,17 +232,19 @@ export function AccountsView({
                 <span className="text-[11px] text-slate-400">
                   Saldo inicial: {formatCurrency(acc.initialBalance)}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAdjustingAccount({ account: acc, currentBalance: bal.currentBalance });
-                    setDesiredBalance(Math.max(0, Number(bal.currentBalance.toFixed(2))));
-                  }}
-                  className="px-3 py-1.5 rounded-xl liquid-glass-interactive text-xs font-bold text-[#60A5FA] hover:text-white flex items-center gap-1.5 cursor-pointer"
-                >
-                  <SlidersHorizontal size={13} />
-                  Reajustar Saldo
-                </button>
+                {acc.owner === 'both' || acc.owner === sessionRole ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAdjustingAccount({ account: acc, currentBalance: bal.currentBalance });
+                      setDesiredBalance(Math.max(0, Number(bal.currentBalance.toFixed(2))));
+                    }}
+                    className="px-3 py-1.5 rounded-xl liquid-glass-interactive text-xs font-bold text-[#60A5FA] hover:text-white flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <SlidersHorizontal size={13} />
+                    Reajustar Saldo
+                  </button>
+                ) : null}
               </div>
             </div>
           );

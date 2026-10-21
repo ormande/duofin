@@ -28,11 +28,13 @@ import {
   Receipt,
   Copy,
   RotateCcw,
+  Lock,
 } from 'lucide-react';
 
 interface CreditCardsViewProps {
   workspace: WorkspaceData;
   selectedMonth: string;
+  sessionRole?: PersonRole;
   onSaveCard: (card: CreditCard, isEdit: boolean) => void;
   onDeleteCard: (cardId: string) => void;
   onSaveInvoicePayment: (payment: InvoicePayment, isEdit: boolean) => void;
@@ -46,6 +48,7 @@ interface CreditCardsViewProps {
 export function CreditCardsView({
   workspace,
   selectedMonth,
+  sessionRole = 'me',
   onSaveCard,
   onDeleteCard,
   onSaveInvoicePayment,
@@ -260,28 +263,40 @@ export function CreditCardsView({
                 </div>
 
                 <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openEditCard(card);
-                    }}
-                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white cursor-pointer"
-                    title="Editar Cartão"
-                  >
-                    <Edit3 size={14} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCardToDelete(card);
-                    }}
-                    className="p-2 rounded-xl bg-white/10 hover:bg-[#F43F5E]/25 text-rose-300 hover:text-[#F43F5E] cursor-pointer"
-                    title="Excluir Cartão"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                  {card.owner !== 'both' && card.owner !== sessionRole ? (
+                    <span
+                      className="px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-[10px] font-semibold text-slate-400 flex items-center gap-1"
+                      title="Este cartão é privado do seu par"
+                    >
+                      <Lock size={12} className="text-[#EC4899]" />
+                      Privado do par
+                    </span>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openEditCard(card);
+                        }}
+                        className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white cursor-pointer"
+                        title="Editar Cartão"
+                      >
+                        <Edit3 size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCardToDelete(card);
+                        }}
+                        className="p-2 rounded-xl bg-white/10 hover:bg-[#F43F5E]/25 text-rose-300 hover:text-[#F43F5E] cursor-pointer"
+                        title="Excluir Cartão"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
